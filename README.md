@@ -63,3 +63,10 @@ O servidor estará rodando em `http://127.0.0.1:8000`.
 Com o servidor no ar, a documentação interativa da API (gerada automaticamente pelo FastAPI) está disponível em:
 * **Swagger UI:** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 * **ReDoc:** [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
+
+## 📖 Endpoints da API
+
+### Maps e rotas de destino
+
+#### `POST /maps/calculate-route`
+Calcula a distância, duração e rota entre dois pontos utilizando a API do Google Maps dependendo do meio de  transporte.
