@@ -70,3 +70,21 @@ Com o servidor no ar, a documentação interativa da API (gerada automaticamente
 
 #### `POST /maps/calculate-route`
 Calcula a distância, duração e rota entre dois pontos utilizando a API do Google Maps dependendo do meio de  transporte.
+
+**Corpo da Requisição (Request Body):**
+```json
+{
+  "origin": "FURG, Rio Grande, RS",
+  "destination": "Praça Tamandaré, Rio Grande, RS",
+  "mode": "driving"
+}
+```
+* `mode` (opcional): pode ser `driving` (padrão), `walking`, `bicycling` ou `transit`.
+
+### Weather
+
+#### `GET /weather/forecast`
+Obtém a previsão do tempo para as próximas 24 horas para um local de destino.
+
+**Parâmetros de Rota (Query Parameters):**
+* `destination` (obrigatório): O nome do local. Exemplo: `Praia do Cassino, Rio Grande, RS`.
