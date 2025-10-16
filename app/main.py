@@ -1,11 +1,12 @@
 
 from fastapi import FastAPI
 
-from .routes import maps_routes
+from .routes import maps_routes, weather_routes
 
 # Cria a instância da aplicação FastAPI
 app = FastAPI(title="AdasteIA", version="0.1.0")
 app.include_router(maps_routes.router)
+app.include_router(weather_routes.router)
 
 # Define um endpoint (ou "rota") para a raiz da URL
 @app.get("/")
