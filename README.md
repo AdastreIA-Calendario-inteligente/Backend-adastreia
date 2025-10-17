@@ -88,3 +88,18 @@ Obtém a previsão do tempo para as próximas 24 horas para um local de destino.
 
 **Parâmetros de Rota (Query Parameters):**
 * `destination` (obrigatório): O nome do local. Exemplo: `Praia do Cassino, Rio Grande, RS`.
+
+### maw
+
+#### `POST /rota_com_clima"`
+Obtém a previsão do tempo juntamente com a rota para as próximas 24 horas para um local de destino.
+
+**Corpo da Requisição (Request Body):**
+```json
+{
+  "origin": "FURG, Rio Grande, RS",
+  "destination": "Praça Tamandaré, Rio Grande, RS",
+  "mode": "driving"
+}
+```
+* `mode` (opcional): pode ser `driving` (padrão), `walking`, `bicycling` ou `transit`.

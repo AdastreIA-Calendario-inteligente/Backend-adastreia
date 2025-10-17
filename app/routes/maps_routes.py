@@ -33,3 +33,4 @@ def get_route_info(request: RouteRequest):
     
     # Simplesmente retorna o resultado que o serviço preparou
     return route_data
+

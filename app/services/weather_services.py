@@ -2,9 +2,20 @@
 import os
 import requests
 from fastapi import HTTPException
+from dotenv import load_dotenv
+import googlemaps
 
-# Importa o cliente do Google Maps que já configuramos no maps_services
-from .maps_services import gmaps_client 
+# Carrega as variáveis de ambiente do arquivo .env
+load_dotenv()
+
+# Pega a chave do ambiente que foi carregada do arquivo .env
+api_key = os.getenv("routes_maps_api_key")
+
+
+# Inicializa o cliente do Google Maps
+gmaps_client = googlemaps.Client(key=api_key)
+
+
 
 # Pega a chave da OpenWeather 
 OPENWEATHER_API_KEY = os.getenv("weather_key")

@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 from datetime import datetime
 from fastapi import HTTPException # Usamos para passar erros para a camada de rota
+from . import weather_services
 
 # Carrega as variáveis de ambiente do arquivo .env
 load_dotenv()
@@ -54,3 +55,4 @@ def calculate_google_maps_route(origin: str, destination: str, mode: str):
     except Exception as e:
         # Outros erros inesperados
         raise HTTPException(status_code=500, detail=f"Ocorreu um erro inesperado no serviço de mapas: {e}")
+    
