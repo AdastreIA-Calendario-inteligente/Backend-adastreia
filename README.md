@@ -103,3 +103,15 @@ Obtém a previsão do tempo juntamente com a rota para as próximas 24 horas par
 }
 ```
 * `mode` (opcional): pode ser `driving` (padrão), `walking`, `bicycling` ou `transit`.
+
+### AI - Gemini
+
+#### `POST /ai/chat`
+Envia um prompt para a IA do Gemini.
+
+**Corpo da Requisição (Request Body):**
+```json
+{
+  "prompt": "string"
+}
+```
