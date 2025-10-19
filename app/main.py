@@ -36,7 +36,7 @@ origins = [
     # **URL DO server do frontend**
 ]
 
-app.middleware(
+app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials = True,
