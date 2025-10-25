@@ -1,6 +1,6 @@
-# app/routes/gemini_routes.py
 
-from fastapi import APIRouter
+
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from ..services import gemini_services
 
@@ -25,3 +25,18 @@ def chat_with_gemini(request: GeminiRequest):
     
     # Retorna a resposta da IA em um JSON
     return {"response": response_text}
+
+@router.post("/chat-interno/{data}", summary="Gera um resumo do dia com base nos eventos")
+def get_chat_interno_resumo_diario(data: str):
+    try:
+        summary = gemini_services.relatorio_diario(event_date_str=data)
+        return {"response": summary}
+    except HTTPException as e:
+        # Repassa exceções HTTP (como o 400 de data inválida)
+        raise e
+    except Exception as e:
+        # Captura qualquer outro erro inesperado
+        print(f"Erro inesperado na rota /chat-interno: {e}")
+        raise HTTPException(status_code=500, detail="Ocorreu um erro interno.")
+    
+    

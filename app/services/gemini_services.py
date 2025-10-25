@@ -3,6 +3,9 @@
 import os
 import google.generativeai as genai
 from fastapi import HTTPException
+from datetime import datetime
+from .. import crud
+from ..database import SessionLocal 
 
 #pegando a cheve da API 
 GEMINI_API_KEY = os.getenv("gemini_key")
@@ -43,3 +46,58 @@ def generate_gemini_response(user_prompt: str):
         # Captura qualquer erro que a API do Gemini possa retornar
         print(f"Erro ao chamar a API do Gemini: {e}")
         raise HTTPException(status_code=500, detail="Ocorreu um erro ao processar sua solicitação com a IA.")
+    
+
+# iremos criar um "pre-prompt" do dia a dia do usuario 
+# busca eventos pela data no banco de dados -> fromata os dados -> pede ao gemini (chatbox)
+def relatorio_diario(event_date_str: str):
+
+    # 1. Validar e converter a data
+    try:
+        event_date = datetime.strptime(event_date_str, '%Y-%m-%d').date()
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Formato de data inválido. Por favor, use AAAA-MM-DD.")
+    
+    db = SessionLocal() # Cria uma sessão de banco de dados
+    try:
+        eventos_do_dia = crud.get_events_by_date(db, event_date=event_date)
+        
+        if not eventos_do_dia:
+            # Resposta amigável se não houver eventos
+            return f"Você não tem nenhum evento agendado para o dia {event_date.strftime('%d/%m/%Y')}."
+        # formata dados para o prompt 
+        ListInfos = []
+
+        for evento in eventos_do_dia:
+            info = f"- Compromisso: {evento.nome}\n"
+            if evento.local:
+                info += f"  Local: {evento.local}\n"
+            if evento.hora_inicio:
+                info += f"  Hora: {evento.hora_inicio.strftime('%H:%M')}\n"
+            if evento.local_de_saida:
+                info += f"  Local de Saída: {evento.local_de_saida}\n"
+            ListInfos.append(info)
+        
+        info_string = "\n".join(ListInfos)
+
+        prePrompt= (
+            f"Meu assistente, AdasteIA. Por favor, escreva um relatório curto e amigável "
+            f"sobre meus compromissos para o dia {event_date.strftime('%d/%m/%Y')}. "
+            f"Organize o dia para mim com base nestas informações:\n\n"
+            f"{info_string}\n\n"
+            f"Seja prestativa e termine com uma nota positiva."
+        )
+
+        # 5. Chamar a API do Gemini
+        response = model.generate_content(prePrompt) 
+        return response.text
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao gerar o relatório: {e}")
+    
+    finally:
+        # finaliza a sessão do banco
+        db.close()
+
+    
+
+

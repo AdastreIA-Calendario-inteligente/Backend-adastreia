@@ -20,5 +20,17 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # nossos modelos em models.py herdaram aqui 
 Base = declarative_base()
 
+# app/database.py
+
+def get_db():
+    """
+    Função de dependência do FastAPI para gerenciar a sessão do banco de dados.
+    """
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 
 
