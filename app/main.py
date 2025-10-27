@@ -1,4 +1,4 @@
-
+from .routes import maps_routes, weather_routes, maw_routes, gemini_routes, user_routes, event_routes
 from fastapi import FastAPI
 
 #para integrar com o frontend 
@@ -13,6 +13,8 @@ app.include_router(maps_routes.router)
 app.include_router(weather_routes.router)
 app.include_router(maw_routes.router)
 app.include_router(gemini_routes.router)
+app.include_router(user_routes.router)
+app.include_router(event_routes.router)
 #app.include_router(event_routes.router)
 
 # Define um endpoint (ou "rota") para a raiz da **URL
@@ -45,4 +47,3 @@ app.add_middleware(
     allow_headers=["*"],
 
 )
-
