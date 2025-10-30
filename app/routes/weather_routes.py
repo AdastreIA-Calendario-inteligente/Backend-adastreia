@@ -14,4 +14,4 @@ def get_weather_forecast(destination: str):
     
     - **destination**: O nome do local (ex: "Praia do Cassino, Rio Grande, RS").
     """
-    return weather_services.get_weather_forecast_for_destination(destination)
+    return weather_services.get_weather_forecast_for_event(destination)

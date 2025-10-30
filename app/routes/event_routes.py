@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException
+
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app import schemas 
 from app import crud 
@@ -6,6 +7,7 @@ from app.database import get_db
 from app.security import get_current_user
 from app import models
 from app.services import maps_services, weather_services
+from datetime import time
 
 router = APIRouter(prefix="/eventos", tags=["Eventos"])
 
