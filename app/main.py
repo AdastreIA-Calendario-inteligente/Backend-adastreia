@@ -36,7 +36,7 @@ def health_check():
 #Lista de origend permitidas 
 origins = [
     # Também é preciso colocar a url do frontend de dev local
-    "https://adastreia.onrender.com"
+    "https://adastreia.onrender.com/"
 ]
 
 app.add_middleware(
