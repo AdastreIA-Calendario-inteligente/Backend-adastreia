@@ -53,7 +53,7 @@ def login(login_data: schemas.UsuarioLogin, db: Session = Depends(get_db)):
         "usuario": schemas.Usuario.model_validate(usuario)
     }
 
-@router.get("/me", response_model=schemas.Usuario)
+@router.get("/me", response_model=schemas.UsuarioResponseCompleto)
 def get_meus_dados_completos(
     db: Session = Depends(get_db),
     current_user: models.Usuario = Depends(security.get_current_user)
