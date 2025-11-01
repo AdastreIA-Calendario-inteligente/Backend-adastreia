@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status # Importe 'status'
 from sqlalchemy.orm import Session
 from app import models, schemas, security, crud
 from app.database import get_db
+from fastapi.security import OAuth2PasswordRequestForm
 
 router = APIRouter(prefix="/usuarios", tags=["Usuários"])
 
@@ -52,7 +53,7 @@ def login(login_data: schemas.UsuarioLogin, db: Session = Depends(get_db)):
         "usuario": schemas.Usuario.model_validate(usuario)
     }
 
-@router.get("/me", response_model=schemas.UsuarioResponse)
+@router.get("/me", response_model=schemas.Usuario)
 def get_meus_dados_completos(
     db: Session = Depends(get_db),
     current_user: models.Usuario = Depends(security.get_current_user)
