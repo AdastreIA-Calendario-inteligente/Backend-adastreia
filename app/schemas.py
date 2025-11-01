@@ -59,3 +59,64 @@ class Evento(BaseModel):
 
     class Config:
         from_attributes = True
+
+# schemas novos 
+class Token(BaseModel):
+    """Schema para a resposta do token de login."""
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    """Schema para os dados dentro do token JWT."""
+    email: Optional[str] = None
+
+#  Schemas de Resposta Aninhados (Para o endpoint de recerregar dados dos usuarios)
+# Estes são os schemas que "mostram tudo".
+
+class TransporteEventoResponse(BaseModel):
+    id_transporte: int
+    meio: str
+    ida: Optional[str] = None
+    volta: Optional[str] = None
+    class Config: from_attributes = True
+
+class DataEventoResponse(BaseModel):
+    id_data: int
+    data: date
+    class Config: from_attributes = True
+    
+class TipoEventoResponse(BaseModel):
+    id_tipo: int
+    tipo: str
+    class Config: from_attributes = True
+
+class EventoResponseCompleto(Evento):
+    """
+    Herda do seu schema 'Evento' e adiciona as listas de 
+    dados aninhados (transportes, datas, tipos).
+    """
+    transportes: List[TransporteEventoResponse] = []
+    datas: List[DataEventoResponse] = []
+    tipos: List[TipoEventoResponse] = []
+    
+    class Config:
+        from_attributes = True
+
+class CalendarioResponse(BaseModel):
+    """Schema para mostrar um Calendário com seus eventos."""
+    id_calendario: int
+    eventos: List[EventoResponseCompleto] = []
+    
+    class Config:
+        from_attributes = True
+
+class UsuarioResponseCompleto(Usuario):
+    """
+    Herda do seu schema 'Usuario' e adiciona a lista 
+    de calendários aninhados.
+    Este é o schema de resposta para o endpoint
+    """
+    calendarios: List[CalendarioResponse] = []
+    
+    class Config:
+        from_attributes = True

@@ -2,7 +2,8 @@
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import date
-from . import models, schemas
+from . import models, schemas, security
+from typing import Optional
 
 # função que pega todos os eventos de um usuario em uma data especifica
 
@@ -96,3 +97,22 @@ def create_event(db: Session, event: schemas.EventoCreate) -> models.Evento:
         # É fundamental lidar com a exceção e relançá-la ou retornar um erro
         print(f"Erro ao criar evento: {e}")
         raise
+
+def get_user_full_data(db: Session, email: str) -> Optional[models.Usuario]:
+    """
+    Busca um usuário e carrega TODOS os seus dados relacionados
+    (calendários, eventos, transportes, etc.) de forma eficiente
+    usando 'joinedload'.
+    """
+    return db.query(models.Usuario).filter(models.Usuario.email == email).options(
+        joinedload(models.Usuario.calendarios)  # Carrega os calendários
+            .joinedload(models.Calendario.eventos)  # Carrega os eventos
+                .joinedload(models.Evento.transportes), # Carrega os transportes
+        joinedload(models.Usuario.calendarios)
+            .joinedload(models.Calendario.eventos)
+                .joinedload(models.Evento.datas), # Carrega as datas
+        joinedload(models.Usuario.calendarios)
+            .joinedload(models.Calendario.eventos)
+                .joinedload(models.Evento.tipos) # Carrega os tipos
+    ).first()
+
