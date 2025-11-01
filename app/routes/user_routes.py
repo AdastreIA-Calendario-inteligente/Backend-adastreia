@@ -29,19 +29,21 @@ def criar_usuario(usuario: schemas.UsuarioCreate, db: Session = Depends(get_db))
     return novo_usuario
 
 @router.post("/login")
-def login(login_data: schemas.UsuarioLogin, db: Session = Depends(get_db)):
+def login(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):
     """
-    Faz login verificando o hash da senha, usando um JSON no corpo da requisição.
+    Faz login verificando o hash da senha, usando dados de formulário OAuth2.
     """
-    # Acessa os dados através do objeto login_data
-    usuario = db.query(models.Usuario).filter(models.Usuario.email == login_data.email).first()
+    # Acessa os dados através do 'form_data'
+    # O 'username' do formulário é o 'email' do seu usuário
+    usuario = db.query(models.Usuario).filter(models.Usuario.email == form_data.username).first()
 
-    if not usuario or not security.verificar_senha(login_data.senha, usuario.senha_hash):
-        # Unifique as mensagens para evitar dar dicas sobre se o usuário existe ou se a senha está errada
+    # Use 'form_data.password' para verificar a senha
+    if not usuario or not security.verificar_senha(form_data.password, usuario.senha_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="E-mail ou senha incorretos."
         )
+        
     # 1. Cria o token de acesso
     access_token = security.create_access_token(
         data={"email": usuario.email}
