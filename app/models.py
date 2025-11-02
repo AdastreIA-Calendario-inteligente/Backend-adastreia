@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Text, Time, Date, ForeignKey, Float
 from sqlalchemy.orm import relationship
-from .database import Base  
+from .database import Base
 
 # Tabelas Presentes no database 
 class Usuario(Base):
@@ -13,6 +13,7 @@ class Usuario(Base):
     # Relacionamentos 
     chats = relationship("ChatIA", back_populates="usuario")
     calendarios = relationship("Calendario", back_populates="usuario")
+
 class ChatIA(Base):
     __tablename__ = "chatia"
 
@@ -25,6 +26,7 @@ class ChatIA(Base):
 
     # Relacionamento 
     usuario = relationship("Usuario", back_populates="chats")
+
 class Calendario(Base):
     __tablename__ = "calendario"
 
@@ -34,8 +36,12 @@ class Calendario(Base):
     usuario_email = Column(String, ForeignKey("usuario.email"), nullable=False) # não pode ficar vazio
 
     # Relacionamentos
-    usuario = relationship("Usuario", back_populates="calendario") 
+    usuario = relationship("Usuario", back_populates="calendarios") 
+    
+    # Um calendário tem muitos 'eventos'
+    # O back_populates aponta para a propriedade 'calendario' no modelo Evento
     eventos = relationship("Evento", back_populates="calendario")
+
 class Evento(Base):
     __tablename__ = "evento"
 
@@ -55,9 +61,15 @@ class Evento(Base):
     id_calendario = Column(Integer, ForeignKey("calendario.id_calendario"), nullable=False)
 
     # Relacionamentos
+    
+    # CORRIGIDO:
+    # Um evento pertence a um 'calendario' (singular)
+    # O back_populates aponta para a propriedade 'eventos' (plural) no modelo Calendario
     calendario = relationship("Calendario", back_populates="eventos") 
-    tipos = relationship("TipoEvento", back_populates="evento")         
-    datas = relationship("DataEvento", back_populates="evento")         
+    
+    tipos = relationship("TipoEvento", back_populates="evento") 
+    datas = relationship("DataEvento", back_populates="evento") 
+
 class TipoEvento(Base):
     __tablename__ = "tipo_evento"
 
@@ -69,6 +81,7 @@ class TipoEvento(Base):
     
     # Relacionamento
     evento = relationship("Evento", back_populates="tipos")
+
 class DataEvento(Base):
     __tablename__ = "data_evento"
 
