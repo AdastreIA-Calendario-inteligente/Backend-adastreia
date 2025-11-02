@@ -1,6 +1,8 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from ..services import maw_services
+from datetime import date, time,datetime
+
 
 router = APIRouter(
     prefix="/mapas e clima",
@@ -13,17 +15,39 @@ class RouteRequest(BaseModel):
     destination: str
     mode: str = "driving" # é um exemplo, mas ainda não sei como podemos identificar do usuario o meio de transporte
 
+
 @router.post("/rota_com_clima", summary="Calcula rota e obtém previsão do tempo para o destino")
-def get_rota_com_clima_info(request: RouteRequest):
+def get_route_and_weather_info(
+    origin: str,
+    destination: str, 
+    mode: str,
+    event_date_str: str, # <-- Peça a data
+    event_time_str: str  # <-- Peça a hora
+):
     """
-    Obtém informações detalhadas da rota e, ao mesmo tempo, busca
-    a previsão do tempo para o local de destino.
+    Calcula a rota E obtém a previsão do tempo filtrada para
+    o local de destino, na data e hora do evento.
     
-    Esta é uma rota de orquestração que combina múltiplos serviços do backend.
+    - **destination**: O nome do local (ex: "Guaíba, RS")
+    - **event_date_str**: A data do evento no formato AAAA-MM-DD
+    - **event_time_str**: A hora do evento no formato HH:MM
     """
-    # A rota simplesmente chama a nova função de orquestração do serviço
+    
+    # Converta as strings em objetos date e time
+    try:
+        parsed_date = datetime.strptime(event_date_str, '%Y-%m-%d').date()
+        parsed_time = datetime.strptime(event_time_str, '%H:%M').time()
+    except ValueError:
+        raise HTTPException(
+            status_code=400, 
+            detail="Formato de data ou hora inválido. Use AAAA-MM-DD e HH:MM"
+        )
+
+    # Chame o serviço de orquestração com TODOS os 5 argumentos
     return maw_services.get_rota_e_clima(
-        origin=request.origin,
-        destination=request.destination,
-        mode=request.mode
+        origin=origin,
+        destination=destination,
+        mode=mode,
+        event_date=parsed_date,
+        event_time=parsed_time
     )

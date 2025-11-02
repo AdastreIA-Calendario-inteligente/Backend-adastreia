@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import date
-from . import models, schemas
+from . import models, schemas, security
+from typing import Optional
 
 # função que pega todos os eventos de um usuario em uma data especifica
 def get_events_by_date(db: Session, event_date: date) -> list[models.Evento]:

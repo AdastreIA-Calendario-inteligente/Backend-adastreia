@@ -1,4 +1,4 @@
-from datetime import date, time, datetime
+from datetime import date, time, datetime,timedelta
 import os
 import requests
 from fastapi import HTTPException
@@ -55,23 +55,24 @@ def get_weather_forecast_for_event(
         response.raise_for_status()
         weather_data = response.json()
 
-        # 1. Combina data e hora para o momento exato do evento
-        target_datetime = datetime.combine(event_date, event_time)
+        #  Combina data e hora para o momento exato do evento
+        target_datetime_local = datetime.combine(event_date, event_time)
+
+        # converte a hora local para UTC 
+        target_datetime_utc = target_datetime_local + timedelta(hours=3)
         
         melhor_previsao = None
+
         menor_diferenca = timedelta(days=5) # Inicializa com um valor alto para comparação
 
-        # 2. Itera sobre todas as previsões disponíveis (até 5 dias)
+        #Itera sobre todas as previsões disponíveis (até 5 dias)
         for forecast in weather_data.get('list', []):
             # Converte a string de data/hora da API para objeto datetime
-            forecast_dt = datetime.strptime(forecast['dt_txt'], '%Y-%m-%d %H:%M:%S')
+            forecast_dt_utc = datetime.strptime(forecast['dt_txt'], '%Y-%m-%d %H:%M:%S')
             
-            # Garante que a previsão é para a data correta
-            if forecast_dt.date() != event_date:
-                continue
                 
             # Calcula a diferença absoluta de tempo entre a previsão e a hora do evento
-            diferenca = abs(forecast_dt - target_datetime)
+            diferenca = abs(forecast_dt_utc - target_datetime_utc)
             
             # Encontra a previsão mais próxima da hora de início
             if diferenca < menor_diferenca:
@@ -82,7 +83,7 @@ def get_weather_forecast_for_event(
              return {"city": weather_data['city']['name'], "forecast": "Nenhuma previsão disponível para a data do evento."}
 
 
-        # 3. Retorna apenas a previsão mais relevante
+        #  Retorna apenas a previsão mais relevante
         return {
             "city": weather_data['city']['name'],
             "country": weather_data['city']['country'],
