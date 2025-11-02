@@ -73,3 +73,30 @@ def login(login_data: schemas.UsuarioLogin, db: Session = Depends(get_db)):
         "usuario": schemas.Usuario.model_validate(usuario)
 
     }
+
+@router.get("/me", response_model=schemas.UsuarioResponseCompleto)
+def get_meus_dados_completos(
+    db: Session = Depends(get_db),
+    current_user: models.Usuario = Depends(security.get_current_user)
+):
+    """
+    Endpoint protegido para "recarregar" o perfil.
+    
+    Retorna todos os dados do usuário logado (perfil, calendários e
+    todos os eventos aninhados com seus transportes, datas, etc.).
+    """
+    
+    # A dependência 'get_current_user' já nos dá o usuário
+    # Mas esse usuário NÃO tem os dados aninhados carregados.
+    
+    # Usamos a função do CRUD para buscar o usuário DE NOVO,
+    # mas desta vez com todos os dados.
+    usuario_data = crud.get_user_full_data(db, email=current_user.email)
+    
+    if not usuario_data:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            detail="Usuário não encontrado."
+        )
+        
+    return usuario_data

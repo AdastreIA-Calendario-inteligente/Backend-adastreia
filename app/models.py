@@ -12,7 +12,7 @@ class Usuario(Base):
 
     # Relacionamentos 
     chats = relationship("ChatIA", back_populates="usuario")
-    calendario = relationship("Calendario", back_populates="usuario")
+    calendarios = relationship("Calendario", back_populates="usuario")
 class ChatIA(Base):
     __tablename__ = "chatia"
 

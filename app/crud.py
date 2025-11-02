@@ -88,6 +88,8 @@ def create_event(db: Session, event: schemas.EventoCreate) -> models.Evento:
         db.rollback()
         print(f"Erro ao criar evento: {e}")
         raise
+
+
 # Atualiza os dados de API (clima, temperatura, rota) em um evento existente
 def update_event_api_data(
     db: Session, 
@@ -120,3 +122,21 @@ def update_event_api_data(
         db.rollback()
         print(f"Erro ao salvar dados de API no evento {event_id}: {e}")
         return None
+    
+
+# pegar todos os eventos de um usuario e sincronizar eles     
+def get_user_full_data(db: Session, email: str) -> Optional[models.Usuario]:
+    """
+    Busca um usuário e carrega TODOS os seus dados relacionados
+    (calendários, eventos, datas, tipos) de forma eficiente
+    usando 'joinedload'.
+    """
+    return db.query(models.Usuario).filter(models.Usuario.email == email).options(
+        joinedload(models.Usuario.calendarios)  # Carrega os calendários
+            .joinedload(models.Calendario.eventos)  # Carrega os eventos
+                .joinedload(models.Evento.datas), # Carrega as datas
+        joinedload(models.Usuario.calendarios)
+            .joinedload(models.Calendario.eventos)
+                .joinedload(models.Evento.tipos) # Carrega os tipos
+    ).first()
+
