@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, status # Importe 'status'
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app import models, schemas, security, crud
 from app.database import get_db
+# 1. Importe OAuth2PasswordRequestForm
 from fastapi.security import OAuth2PasswordRequestForm
 
 router = APIRouter(prefix="/usuarios", tags=["Usuários"])
@@ -24,55 +25,53 @@ def criar_usuario(usuario: schemas.UsuarioCreate, db: Session = Depends(get_db))
         senha_hash=senha_hash
     )
     db.add(novo_usuario)
+
+
+    novo_calendario = models.Calendario(usuario_email=novo_usuario.email)
+    db.add(novo_calendario)
+
+    
     db.commit()
     db.refresh(novo_usuario)
     return novo_usuario
 
-@router.post("/login")
-def login(login_data: schemas.UsuarioLogin, db: Session = Depends(get_db)):
 
+@router.post("/login", response_model=schemas.Token) 
+def login(
+    # 2. Mude o parâmetro de entrada para usar OAuth2PasswordRequestForm
+    form_data: OAuth2PasswordRequestForm = Depends(), 
+    db: Session = Depends(get_db)
+):
+    """
+    Faz login para obter um token de acesso OAuth2.
+    Esta rota é usada pelo botão 'Authorize' no /docs.
     """
 
-    Faz login verificando o hash da senha, usando um JSON no corpo da requisição.
+    # 3. Use 'form_data.username' para pegar o e-mail
+    # O Swagger UI envia o campo 'username', que usaremos como e-mail.
+    usuario = db.query(models.Usuario).filter(models.Usuario.email == form_data.username).first()
 
-    """
-
-    # Acessa os dados através do objeto login_data
-
-    usuario = db.query(models.Usuario).filter(models.Usuario.email == login_data.email).first()
-
-
-    if not usuario or not security.verificar_senha(login_data.senha, usuario.senha_hash):
-
-        # Unifique as mensagens para evitar dar dicas sobre se o usuário existe ou se a senha está errada
-
+    # 3. Use 'form_data.password' para pegar a senha
+    if not usuario or not security.verificar_senha(form_data.password, usuario.senha_hash):
+        # Unifique as mensagens para evitar dar dicas
         raise HTTPException(
-
             status_code=status.HTTP_401_UNAUTHORIZED,
-
-            detail="E-mail ou senha incorretos."
-
+            detail="E-mail (username) ou senha incorretos.",
+            # É uma boa prática adicionar este header na falha de login
+            headers={"WWW-Authenticate": "Bearer"}, 
         )
 
     # 1. Cria o token de acesso
-
     access_token = security.create_access_token(
-
         data={"email": usuario.email}
-
     )
 
-    # 2. Retorna o token e o tipo (padrão Bearer)
-
+    # 4. Retorne APENAS o token, no formato que o Swagger espera
     return {
-
         "access_token": access_token,
-
-        "token_type": "bearer",
-
-        "usuario": schemas.Usuario.model_validate(usuario)
-
+        "token_type": "bearer"
     }
+
 
 @router.get("/me", response_model=schemas.UsuarioResponseCompleto)
 def get_meus_dados_completos(
@@ -86,11 +85,8 @@ def get_meus_dados_completos(
     todos os eventos aninhados com seus transportes, datas, etc.).
     """
     
-    # A dependência 'get_current_user' já nos dá o usuário
-    # Mas esse usuário NÃO tem os dados aninhados carregados.
-    
-    # Usamos a função do CRUD para buscar o usuário DE NOVO,
-    # mas desta vez com todos os dados.
+    # Esta função não precisa de mudança, pois ela já usa
+    # a dependência 'get_current_user' que funciona com o token.
     usuario_data = crud.get_user_full_data(db, email=current_user.email)
     
     if not usuario_data:

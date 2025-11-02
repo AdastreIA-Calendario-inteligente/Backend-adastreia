@@ -14,35 +14,39 @@ router = APIRouter(prefix="/eventos", tags=["Eventos"])
 # Rota POST para CRIAR um novo evento
 @router.post("/", response_model=schemas.Evento, status_code=201)
 def criar_evento(
+    # O schema 'evento' agora NÃO tem 'id_calendario'
     evento: schemas.EventoCreate, 
     db: Session = Depends(get_db),
-    # Adiciona a dependência JWT
     usuario_logado: models.Usuario = Depends(get_current_user) 
 ):
     """
-    Cria um novo evento no calendário, verificando a autorização do usuário logado.
+    Cria um novo evento no calendário do usuário logado.
+    O ID do calendário é obtido automaticamente através da autenticação.
     """
+    
     # 1. Busca o calendário vinculado ao usuário logado
     calendario_usuario = db.query(models.Calendario).filter(
         models.Calendario.usuario_email == usuario_logado.email
     ).first()
     
     if not calendario_usuario:
-        # Se o usuário logado não tiver um calendário (algo que deve ser criado no cadastro)
+        # Esta verificação AINDA É IMPORTANTE
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, 
             detail="Nenhum calendário associado ao usuário."
         )
 
-    # 2. VERIFICAÇÃO DE AUTORIZAÇÃO: Confirma se o id_calendario do payload corresponde ao id do usuário
-    if evento.id_calendario != calendario_usuario.id_calendario:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, 
-            detail="Você só pode criar eventos no seu próprio calendário."
-        )
+    # 2. REMOVEMOS A VERIFICAÇÃO DE AUTORIZAÇÃO ANTIGA
+    #    if evento.id_calendario != calendario_usuario.id_calendario: ...
+    #    (Isso não é mais necessário!)
          
     try:
-        db_evento = crud.create_event(db=db, event=evento)
+        # 3. Chamamos o CRUD passando o ID do calendário do usuário
+        db_evento = crud.create_event(
+            db=db, 
+            event=evento, 
+            calendario_id=calendario_usuario.id_calendario
+        )
         return db_evento
     except Exception as e:
         print(f"Erro ao criar evento na rota: {e}")

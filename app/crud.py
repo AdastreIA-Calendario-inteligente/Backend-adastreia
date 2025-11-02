@@ -42,14 +42,17 @@ def get_event_by_id(db: Session, event_id: int):
         )\
         .first()
 # Cria um novo evento
-def create_event(db: Session, event: schemas.EventoCreate) -> models.Evento:
+def create_event(db: Session, event: schemas.EventoCreate, calendario_id: int) -> models.Evento:
     """
     Cria um novo Evento e todas as suas entidades relacionadas.
     """
     try:
-        # 1. Cria o objeto principal Evento, mapeando os campos do schema para o model
+        # 1. Cria o objeto principal Evento
         db_evento = models.Evento(
-            id_calendario=event.id_calendario, # Chave estrangeira
+            # Use o 'calendario_id' recebido como argumento
+            id_calendario=calendario_id, 
+            
+            # O restante vem do schema 'event'
             nome=event.nome,
             local=event.local,
             duracao=event.duracao,
@@ -88,40 +91,6 @@ def create_event(db: Session, event: schemas.EventoCreate) -> models.Evento:
         db.rollback()
         print(f"Erro ao criar evento: {e}")
         raise
-
-
-# Atualiza os dados de API (clima, temperatura, rota) em um evento existente
-def update_event_api_data(
-    db: Session, 
-    event_id: int, 
-    clima: str, 
-    temperatura: float, 
-    distancia: str, 
-    duracao: str
-) -> models.Evento | None:
-    """
-    Atualiza os campos de dados de API (clima, temperatura, rota) em um evento existente.
-    """
-    try:
-        db_evento = db.query(models.Evento).filter(models.Evento.id_evento == event_id).first()
-        
-        if db_evento:
-            # Atualiza os campos
-            db_evento.clima = clima
-            db_evento.temperatura = temperatura
-            db_evento.distancia = distancia
-            db_evento.duracao = duracao # Já existe no models.py, mas atualizamos se necessário
-            
-            db.commit()
-            db.refresh(db_evento)
-            return db_evento
-            
-        return None
-        
-    except SQLAlchemyError as e:
-        db.rollback()
-        print(f"Erro ao salvar dados de API no evento {event_id}: {e}")
-        return None
     
 
 # pegar todos os eventos de um usuario e sincronizar eles     

@@ -28,7 +28,7 @@ class TipoEventoBase(BaseModel):
 
 # Schema de criação de Evento (o que o usuário envia)
 class EventoCreate(BaseModel):
-    id_calendario: int 
+    #id_calendario: int 
     nome: str
     local: Optional[str] = None
     duracao: Optional[str] = None
