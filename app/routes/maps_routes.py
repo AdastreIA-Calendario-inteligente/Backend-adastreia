@@ -1,5 +1,3 @@
-
-
 from fastapi import APIRouter
 from pydantic import BaseModel
 from ..services import maps_services

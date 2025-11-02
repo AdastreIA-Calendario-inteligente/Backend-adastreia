@@ -34,20 +34,25 @@ def login(login_data: schemas.UsuarioLogin, db: Session = Depends(get_db)):
     """
     # Acessa os dados através do objeto login_data
     usuario = db.query(models.Usuario).filter(models.Usuario.email == login_data.email).first()
-
     if not usuario or not security.verificar_senha(login_data.senha, usuario.senha_hash):
+
         # Unifique as mensagens para evitar dar dicas sobre se o usuário existe ou se a senha está errada
+
         raise HTTPException(
+
             status_code=status.HTTP_401_UNAUTHORIZED,
+
             detail="E-mail ou senha incorretos."
         )
+
     # 1. Cria o token de acesso
     access_token = security.create_access_token(
         data={"email": usuario.email}
     )
+
     # 2. Retorna o token e o tipo (padrão Bearer)
     return {
-        "access_token": access_token, 
+        "access_token": access_token,
         "token_type": "bearer",
         "usuario": schemas.Usuario.model_validate(usuario)
-    }
+}

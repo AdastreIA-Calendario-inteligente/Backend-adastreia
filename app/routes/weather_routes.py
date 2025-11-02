@@ -1,4 +1,3 @@
-
 from fastapi import APIRouter
 from ..services import weather_services
 

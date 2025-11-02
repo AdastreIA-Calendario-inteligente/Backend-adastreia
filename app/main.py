@@ -15,7 +15,6 @@ app.include_router(maw_routes.router)
 app.include_router(gemini_routes.router)
 app.include_router(user_routes.router)
 app.include_router(event_routes.router)
-#app.include_router(event_routes.router)
 
 # Define um endpoint (ou "rota") para a raiz da **URL
 @app.get("/")
@@ -33,7 +32,7 @@ def health_check():
     """
     return {"status": "ok"}
 
-#Lista de origend permitidas 
+#Lista de origins permitidas 
 origins = [
     # Também é preciso colocar a url do frontend de dev local
     # **URl DO server do frontend**
@@ -45,5 +44,4 @@ app.add_middleware(
     allow_credentials = True,
     allow_methods=["*"],
     allow_headers=["*"],
-
 )

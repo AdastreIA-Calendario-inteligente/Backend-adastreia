@@ -1,10 +1,8 @@
-
-from sqlalchemy import Column, Integer, String, Text, Time, Date, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, Time, Date, ForeignKey, Float
 from sqlalchemy.orm import relationship
-from .database import Base  # Importa a Base do seu database.py
+from .database import Base  
 
 # Tabelas Presentes no database 
-
 class Usuario(Base):
     __tablename__ = "usuario"
 
@@ -14,8 +12,7 @@ class Usuario(Base):
 
     # Relacionamentos 
     chats = relationship("ChatIA", back_populates="usuario")
-    calendarios = relationship("Calendario", back_populates="usuario")
-
+    calendario = relationship("Calendario", back_populates="usuario")
 class ChatIA(Base):
     __tablename__ = "chatia"
 
@@ -28,7 +25,6 @@ class ChatIA(Base):
 
     # Relacionamento 
     usuario = relationship("Usuario", back_populates="chats")
-
 class Calendario(Base):
     __tablename__ = "calendario"
 
@@ -38,19 +34,22 @@ class Calendario(Base):
     usuario_email = Column(String, ForeignKey("usuario.email"), nullable=False) # não pode ficar vazio
 
     # Relacionamentos
-    usuario = relationship("Usuario", back_populates="calendarios") 
+    usuario = relationship("Usuario", back_populates="calendario") 
     eventos = relationship("Evento", back_populates="calendario")
-
-# provavelmenete a parte mais importante
 class Evento(Base):
     __tablename__ = "evento"
 
     id_evento = Column(Integer, primary_key=True, index=True)
     nome = Column(String)
-    local = Column(String)
-    duracao = Column(Time)
-    hora_inicio = Column(Time)
-    local_de_saida = Column(String)
+    local = Column(String) #local do evento
+    duracao = Column(String)
+    hora_inicio = Column(String)
+    local_de_saida = Column(String) #local de onde o usuario vai sair
+    temperatura = Column(Float)
+    clima = Column(String)
+    hora_fim = Column(String)
+    distancia = Column(String)
+    transporte = Column(String)
     
     # Chave estrangeira
     id_calendario = Column(Integer, ForeignKey("calendario.id_calendario"), nullable=False)
@@ -59,8 +58,6 @@ class Evento(Base):
     calendario = relationship("Calendario", back_populates="eventos") 
     tipos = relationship("TipoEvento", back_populates="evento")         
     datas = relationship("DataEvento", back_populates="evento")         
-    transportes = relationship("TransporteEvento", back_populates="evento") 
-
 class TipoEvento(Base):
     __tablename__ = "tipo_evento"
 
@@ -72,7 +69,6 @@ class TipoEvento(Base):
     
     # Relacionamento
     evento = relationship("Evento", back_populates="tipos")
-
 class DataEvento(Base):
     __tablename__ = "data_evento"
 
@@ -84,21 +80,3 @@ class DataEvento(Base):
     
     # Relacionamento
     evento = relationship("Evento", back_populates="datas")
-
-
-class TransporteEvento(Base):
-    __tablename__ = "transporte_evento"
-
-    id_transporte = Column(Integer, primary_key=True, index=True)
-    meio = Column(String)
-    ida = Column(String)
-    volta = Column(String)
-    
-    # Chave estrangeira
-    evento_id = Column(Integer, ForeignKey("evento.id_evento"), nullable=False)
-    
-    # Relacionamento
-    evento = relationship("Evento", back_populates="transportes") 
-
-
-

@@ -13,9 +13,6 @@ class RouteRequest(BaseModel):
     destination: str
     mode: str = "driving" # é um exemplo, mas ainda não sei como podemos identificar do usuario o meio de transporte
 
-
-
-
 @router.post("/rota_com_clima", summary="Calcula rota e obtém previsão do tempo para o destino")
 def get_rota_com_clima_info(request: RouteRequest):
     """
