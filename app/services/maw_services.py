@@ -1,9 +1,7 @@
 from . import weather_services
 from . import maps_services
 from datetime import date, time
-
 from fastapi import HTTPException
-
 import os 
 from dotenv import load_dotenv
 import googlemaps

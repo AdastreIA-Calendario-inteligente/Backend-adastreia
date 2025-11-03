@@ -14,6 +14,7 @@ class Usuario(Base):
     chats = relationship("ChatIA", back_populates="usuario")
     calendarios = relationship("Calendario", back_populates="usuario")
 
+# Modelo para armazenar conversas com a IA
 class ChatIA(Base):
     __tablename__ = "chatia"
 
@@ -27,6 +28,7 @@ class ChatIA(Base):
     # Relacionamento 
     usuario = relationship("Usuario", back_populates="chats")
 
+# Modelo para Calendário e Eventos
 class Calendario(Base):
     __tablename__ = "calendario"
 
@@ -42,6 +44,7 @@ class Calendario(Base):
     # O back_populates aponta para a propriedade 'calendario' no modelo Evento
     eventos = relationship("Evento", back_populates="calendario")
 
+# Modelo para Evento, TipoEvento e DataEvento
 class Evento(Base):
     __tablename__ = "evento"
 
@@ -70,6 +73,8 @@ class Evento(Base):
     tipos = relationship("TipoEvento", back_populates="evento") 
     datas = relationship("DataEvento", back_populates="evento") 
 
+
+# Modelo para TipoEvento
 class TipoEvento(Base):
     __tablename__ = "tipo_evento"
 
@@ -82,6 +87,8 @@ class TipoEvento(Base):
     # Relacionamento
     evento = relationship("Evento", back_populates="tipos")
 
+
+# Modelo para DataEvento
 class DataEvento(Base):
     __tablename__ = "data_evento"
 

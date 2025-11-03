@@ -20,6 +20,7 @@ OPENWEATHER_API_KEY = os.getenv("weather_key")
 # URL base para a API de previsão de 5 dias / 3 horas
 WEATHER_API_URL = "https://api.openweathermap.org/data/2.5/forecast"
 
+# Função de serviço que obtém a previsão do tempo para um evento específico
 def get_weather_forecast_for_event(
     destination: str, 
     event_date: date, 
@@ -37,7 +38,7 @@ def get_weather_forecast_for_event(
         
         location = geocode_result[0]['geometry']['location']
         lat, lon = location['lat'], location['lng']
-
+    # Manejo de erros simples
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro durante a geocodificação: {e}")
 
@@ -50,7 +51,7 @@ def get_weather_forecast_for_event(
             'units': 'metric',# Para obter temperatura em Celsius
             'lang': 'pt_br' # Para obter descrições em Português
         }
-        
+
         response = requests.get(WEATHER_API_URL, params=params)
         response.raise_for_status()
         weather_data = response.json()
@@ -78,7 +79,7 @@ def get_weather_forecast_for_event(
             if diferenca < menor_diferenca:
                 menor_diferenca = diferenca
                 melhor_previsao = forecast
-
+        # Se nenhuma previsão foi encontrada
         if not melhor_previsao:
              return {"city": weather_data['city']['name'], "forecast": "Nenhuma previsão disponível para a data do evento."}
 

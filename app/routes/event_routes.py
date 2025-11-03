@@ -1,4 +1,3 @@
-
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app import schemas, crud, models
@@ -8,7 +7,6 @@ from app.database import get_db
 from app.security import get_current_user
 from app.services import maps_services, weather_services
 from datetime import time
-
 router = APIRouter(prefix="/eventos", tags=["Eventos"])
 
 # Rota POST para CRIAR um novo evento
@@ -73,6 +71,7 @@ def buscar_evento(
         models.Calendario.usuario_email == usuario_logado.email
     ).first()
     
+    # Verifica se o evento pertence ao calendário do usuário logado
     if not calendario_usuario or db_evento.id_calendario != calendario_usuario.id_calendario:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, 
@@ -117,6 +116,7 @@ def buscar_evento(
                     event_time=event_time
                 )
                 
+                # Se a API retornou dados válidos
                 if weather_data_result and 'forecast' in weather_data_result:
                     forecast = weather_data_result['forecast']
                     # Salva os valores no OBJETO DB (ainda não salvo no banco)
@@ -124,7 +124,8 @@ def buscar_evento(
                     db_evento.temperatura = float(forecast.get('temperature_celsius', 0))
                     weather_data = weather_data_result # Armazena para o objeto de resposta
                     needs_update = True # Marca para salvar no final
-                    
+
+            #  Manejo de erros simples        
             except Exception as e:
                 print(f"Erro ao obter dados de clima: {e}")
                 weather_data = {"erro": "Não foi possível obter a previsão do tempo."}

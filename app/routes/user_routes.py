@@ -5,8 +5,10 @@ from app.database import get_db
 # 1. Importe OAuth2PasswordRequestForm
 from fastapi.security import OAuth2PasswordRequestForm
 
+# Define o roteador para as rotas relacionadas a Usuários
 router = APIRouter(prefix="/usuarios", tags=["Usuários"])
 
+# Rota POST para CRIAR um novo usuário
 @router.post("/", response_model=schemas.Usuario)
 def criar_usuario(usuario: schemas.UsuarioCreate, db: Session = Depends(get_db)):
     """
@@ -26,16 +28,16 @@ def criar_usuario(usuario: schemas.UsuarioCreate, db: Session = Depends(get_db))
     )
     db.add(novo_usuario)
 
-
+# Cria um calendário vazio para o novo usuário
     novo_calendario = models.Calendario(usuario_email=novo_usuario.email)
     db.add(novo_calendario)
 
-    
+# Commit as mudanças no banco de dados    
     db.commit()
     db.refresh(novo_usuario)
     return novo_usuario
 
-
+# Rota POST para LOGIN e obtenção de token OAuth2
 @router.post("/login", response_model=schemas.Token) 
 def login(
     # 2. Mude o parâmetro de entrada para usar OAuth2PasswordRequestForm
@@ -72,7 +74,7 @@ def login(
         "token_type": "bearer"
     }
 
-
+# Rota GET para obter os dados completos do usuário logado
 @router.get("/me", response_model=schemas.UsuarioResponseCompleto)
 def get_meus_dados_completos(
     db: Session = Depends(get_db),
@@ -88,7 +90,7 @@ def get_meus_dados_completos(
     # Esta função não precisa de mudança, pois ela já usa
     # a dependência 'get_current_user' que funciona com o token.
     usuario_data = crud.get_user_full_data(db, email=current_user.email)
-    
+# Verifica se o usuário foi encontrado    
     if not usuario_data:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, 

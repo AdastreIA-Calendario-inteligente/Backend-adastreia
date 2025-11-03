@@ -50,6 +50,8 @@ class DataEvento(BaseModel):
     data: date
     class Config:
         from_attributes = True
+
+# Atual Schema de Evento com relacionamentos
 class Evento(BaseModel):
     id_evento: int
     nome: str
@@ -76,11 +78,15 @@ class Evento(BaseModel):
 #Atualiza a referência para o novo Schema DataEvento
 Evento.model_rebuild()
 # schemas novos 
+
+# Schemas para autenticação com JWT
 class Token(BaseModel):
     """Schema para a resposta do token de login."""
     access_token: str
     token_type: str
 
+
+#  Schema para os dados dentro do token JWT
 class TokenData(BaseModel):
     """Schema para os dados dentro do token JWT."""
     email: Optional[str] = None
@@ -95,6 +101,8 @@ class TransporteEventoResponse(BaseModel):
     volta: Optional[str] = None
     class Config: from_attributes = True
 
+
+# Schema para o TipoEvento na resposta
 class DataEventoResponse(BaseModel):
     id_data: int
     data: date
@@ -105,6 +113,8 @@ class TipoEventoResponse(BaseModel):
     tipo: str
     class Config: from_attributes = True
 
+
+# Schema completo de Evento com todos os relacionamentos aninhados
 class EventoResponseCompleto(Evento):
     """
     Herda do seu schema 'Evento' e adiciona as listas de 
@@ -117,6 +127,8 @@ class EventoResponseCompleto(Evento):
     class Config:
         from_attributes = True
 
+
+# Schema para o Calendário com seus eventos aninhados
 class CalendarioResponse(BaseModel):
     """Schema para mostrar um Calendário com seus eventos."""
     id_calendario: int
@@ -125,6 +137,8 @@ class CalendarioResponse(BaseModel):
     class Config:
         from_attributes = True
 
+
+# Schema completo de Usuário com todos os calendários aninhados
 class UsuarioResponseCompleto(Usuario):
     """
     Herda do seu schema 'Usuario' e adiciona a lista 

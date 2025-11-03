@@ -7,7 +7,7 @@ AdasteIA é um projeto de sistema distribuído que funciona como um calendário 
 Este projeto foi desenvolvido para a disciplina de Sistemas Distribuídos da FURG.
 
 ### Equipe
-* João gabriel freitas acosta 
+* João Gabriel Freitas Acosta 
 * Lara Letittja
 * Karoline Vieira
 

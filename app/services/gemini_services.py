@@ -28,6 +28,7 @@ SYSTEM_INSTRUCTION = (
 )
 
 
+# Função para gerar resposta do Gemini com contexto do sistema
 def generate_gemini_response(user_prompt: str):
     """
     Gera uma resposta do Gemini, já com o contexto do sistema AdasteIA.
@@ -68,6 +69,7 @@ def relatorio_diario(event_date_str: str):
         # formata dados para o prompt 
         ListInfos = []
 
+        # 4. Formatar os dados dos eventos
         for evento in eventos_do_dia:
             info = f"- Compromisso: {evento.nome}\n"
             if evento.local:
@@ -77,9 +79,10 @@ def relatorio_diario(event_date_str: str):
             if evento.local_de_saida:
                 info += f"  Local de Saída: {evento.local_de_saida}\n"
             ListInfos.append(info)
-        
+        # cria a string final
         info_string = "\n".join(ListInfos)
-
+        
+        # 5. Criar o pre-prompt para o Gemini
         prePrompt= (
             f"Meu assistente, AdasteIA. Por favor, escreva um relatório curto e amigável "
             f"sobre meus compromissos para o dia {event_date.strftime('%d/%m/%Y')}. "

@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from ..services import maw_services
 from datetime import date, time,datetime
 
-
+# Define o roteador para as rotas relacionadas à Maps e Clima juntos
 router = APIRouter(
     prefix="/mapas e clima",
     tags=["funções de local e clima juntos"],
@@ -16,6 +16,7 @@ class RouteRequest(BaseModel):
     mode: str = "driving" # é um exemplo, mas ainda não sei como podemos identificar do usuario o meio de transporte
 
 
+# Rota POST para calcular rota e obter clima
 @router.post("/rota_com_clima", summary="Calcula rota e obtém previsão do tempo para o destino")
 def get_route_and_weather_info(
     origin: str,

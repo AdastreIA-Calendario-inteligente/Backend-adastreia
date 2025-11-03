@@ -100,6 +100,7 @@ def get_user_full_data(db: Session, email: str) -> Optional[models.Usuario]:
     (calendários, eventos, datas, tipos) de forma eficiente
     usando 'joinedload'.
     """
+    # Usa 'joinedload' para carregar todos os relacionamentos necessários
     return db.query(models.Usuario).filter(models.Usuario.email == email).options(
         joinedload(models.Usuario.calendarios)  # Carrega os calendários
             .joinedload(models.Calendario.eventos)  # Carrega os eventos

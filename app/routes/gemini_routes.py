@@ -1,9 +1,8 @@
-
-
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from ..services import gemini_services
 
+# Define o roteador para as rotas relacionadas à IA Gemini
 router = APIRouter(
     prefix="/ai",
     tags=["AI - Gemini"], # Nova tag para a documentação
@@ -13,6 +12,7 @@ router = APIRouter(
 class GeminiRequest(BaseModel):
     prompt: str
 
+# Rota POST para interagir com a IA Gemini
 @router.post("/chat", summary="Envia um prompt para a IA Gemini")
 def chat_with_gemini(request: GeminiRequest):
     """
@@ -26,6 +26,7 @@ def chat_with_gemini(request: GeminiRequest):
     # Retorna a resposta da IA em um JSON
     return {"response": response_text}
 
+# Rota POST para gerar resumo diário com base em eventos
 @router.post("/chat-interno/{data}", summary="Gera um resumo do dia com base nos eventos")
 def get_chat_interno_resumo_diario(data: str):
     try:

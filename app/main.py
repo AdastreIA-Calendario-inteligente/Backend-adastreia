@@ -37,7 +37,7 @@ origins = [
     # Também é preciso colocar a url do frontend de dev local
     "https://adastreia.onrender.com/"
 ]
-
+# Configuração do CORS para permitir requisições do frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,

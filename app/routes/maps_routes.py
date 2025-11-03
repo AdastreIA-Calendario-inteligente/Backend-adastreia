@@ -2,6 +2,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 from ..services import maps_services
 
+# Define o roteador para as rotas relacionadas a Maps e rotas de destino
 router = APIRouter(
     prefix="/maps",
     tags=["Maps e rotas de destino"],
@@ -13,6 +14,7 @@ class RouteRequest(BaseModel):
     destination: str
     mode: str = "driving" # é um exemplo, mas ainda não sei como podemos identificar do usuario o meio de transporte
 
+# Rota POST para calcular rota e tempo de viagem
 @router.post("/calculate-route", summary="Calcula rota e tempo de viagem")
 def get_route_info(request: RouteRequest):
     """

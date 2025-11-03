@@ -2,11 +2,13 @@ from fastapi import APIRouter, HTTPException
 from ..services import weather_services
 from datetime import datetime, date, time # <-- 1. Importe o necessário
 
+# Define o roteador para as rotas relacionadas ao clima
 router = APIRouter(
     prefix="/weather",
     tags=["Weather"],
 )
 
+# Rota GET para obter a previsão do tempo para um evento específico
 @router.get("/forecast", summary="Obtém a previsão do tempo para um evento específico")
 def get_weather_forecast(
     destination: str, 

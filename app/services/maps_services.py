@@ -16,6 +16,7 @@ api_key = os.getenv("routes_maps_api_key")
 # Inicializa o cliente do Google Maps
 gmaps_client = googlemaps.Client(key=api_key)
 
+# Função de serviço para calcular rota usando a API do Google Maps
 def calculate_google_maps_route(origin: str, destination: str, mode: str):
     """
     Função de serviço que calcula uma rota usando a API do Google Maps.
